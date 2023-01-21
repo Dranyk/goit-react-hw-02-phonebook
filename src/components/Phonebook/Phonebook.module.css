@@ -1,0 +1,12 @@
+.phonebook {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    border: 1px solid black;
+    padding: 0 100px 20px 20px;
+}
+
+.button {
+    margin-top: 15px;
+    width: 100px;
+}

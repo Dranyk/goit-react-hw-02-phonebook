@@ -1,5 +1,8 @@
 import { Component } from 'react';
-import Section from './Section/Section';
+import { nanoid } from 'nanoid';
+import css from './App.module.css';
+import Contacts from './Contacts/Contacts';
+import Phonebook from './Phonebook/Phonebook';
 
 class App extends Component {
   state = {
@@ -7,17 +10,32 @@ class App extends Component {
     name: '',
   };
 
+  handleSubmitForm = evt => {
+    evt.preventDefault();
+    this.setState(({ contacts, name }) => {
+      contacts.push({ id: nanoid(), name });
+    });
+    this.setState({ name: '' });
+  };
+
+  handleCanngeInput = evt => {
+    this.setState({ [evt.target.name]: evt.target.value });
+  };
+
   render() {
+    const { contacts, name } = this.state;
     return (
-      <Section title='Name'>
-        <input
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-        />
-      </Section>
+      <div className={css.container}>
+        <div>
+          <h1>Phonebook</h1>
+          <Phonebook  name={name}
+            onSubmit={this.handleSubmitForm}
+            onChange={this.handleCanngeInput}/>
+
+          <h2>Contacts</h2>
+          <Contacts contactList={contacts} />
+        </div>
+      </div>
     );
   }
 }

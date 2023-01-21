@@ -3,37 +3,64 @@ import { nanoid } from 'nanoid';
 import css from './App.module.css';
 import Contacts from './Contacts/Contacts';
 import Phonebook from './Phonebook/Phonebook';
+import Filter from './Filter/Filter';
 
 class App extends Component {
   state = {
     contacts: [],
-    name: '',
+    filter: '',
+  };
+  isContactInState = ({ name, number }) =>
+    !!this.state.contacts.filter(({ name: prevName, number: prevNumber }) => {
+      return prevName === name && prevNumber === number;
+    }).length;
+
+  handleSubmitForm = ({ name, number }) => {
+    if (this.isContactInState({ name, number })) {
+      alert('Contact is in phonebook');
+      return;
+    }
+
+    this.setState(({ contacts: prevContacts }) => ({
+      contacts: [...prevContacts, { id: nanoid(), name, number }],
+    }));
   };
 
-  handleSubmitForm = evt => {
-    evt.preventDefault();
-    this.setState(({ contacts, name }) => {
-      contacts.push({ id: nanoid(), name });
-    });
-    this.setState({ name: '' });
+  handleFilterChange = evt => {
+    this.setState({ filter: evt.currentTarget.value });
   };
 
-  handleCanngeInput = evt => {
-    this.setState({ [evt.target.name]: evt.target.value });
+  filterNormalize = filter => filter.toLowerCase();
+
+  contactListToDisplay = (contacts, filter) =>
+    contacts.filter(({ name }) => name.toLowerCase().includes(filter));
+
+
+  handleDeleteContact = id => {
+    this.setState(({ contacts: prevContacts }) => ({
+      contacts: prevContacts.filter(({ id: contactId }) => contactId !== id),
+    }));
   };
 
   render() {
-    const { contacts, name } = this.state;
+    const { contacts, filter } = this.state;
+    const normalizedFilter = this.filterNormalize(filter);
+    const contactsToDisplay = this.contactListToDisplay(
+      contacts,
+      normalizedFilter
+    );
     return (
       <div className={css.container}>
         <div>
           <h1>Phonebook</h1>
-          <Phonebook  name={name}
-            onSubmit={this.handleSubmitForm}
-            onChange={this.handleCanngeInput}/>
+          <Phonebook onSubmitForm={this.handleSubmitForm} />
 
           <h2>Contacts</h2>
-          <Contacts contactList={contacts} />
+          <Filter filter={filter} onChange={this.handleFilterChange} />
+          <Contacts
+            contactList={contactsToDisplay}
+            onDelete={this.handleDeleteContact}
+          />
         </div>
       </div>
     );

@@ -1,28 +1,65 @@
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import css from './Phonebook.module.css';
 
-const Phonebook = ({name,onSubmit,onChange}) => {
-  return (
-    <form className={css.phonebook} onSubmit={onSubmit}>
-    <label>
-      <p>Name</p>
-      <input
-        type="text"
-        name="name"
-        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-        required
-        value={name}
-        onChange={onChange}
-      />
-      </label>
-      <button className={css.button} type="submit">Add contact</button>
-      </form>
-  );
-};
+class Phonebook extends Component {
+    state = {
+        name: '',
+        number: '',
+      };
+    
+      handleCanngeInput = evt => {
+        const { name, value } = evt.currentTarget;
+        this.setState({ [name]: value });
+      };
+    
+      handleFormSubmit = evt => {
+        evt.preventDefault();
+        const { name, number } = this.state;
+        this.props.onSubmitForm({ name, number });
+        this.setState({ name: '', number: '' });
+      };
+    
+      render() {
+        const { name, number } = this.state;
+        return (
+          <form className={css.phonebook} onSubmit={this.handleFormSubmit}>
+            <label>
+              <p>Name</p>
+              <input
+                type="text"
+                name="name"
+                pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+                title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+                required
+                value={name}
+                onChange={this.handleCanngeInput}
+              />
+            </label>
+            <label>
+              <p>Number</p>
+              <input
+                type="tel"
+                name="number"
+                pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+                title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+                required
+                value={number}
+                onChange={this.handleCanngeInput}
+              />
+            </label>
+            <button className={css.button} type="submit">
+              Add contact
+            </button>
+          </form>
+        );
+      }
+    }
 
 export default Phonebook;
 
 Phonebook.propTypes = {
     name:PropTypes.string,
+    number:PropTypes.number,
+    onSubmit:PropTypes.object,
 }

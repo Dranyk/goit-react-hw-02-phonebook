@@ -3,14 +3,12 @@ import css from './ContactItem.module.css';
 
 const ContactItem = ({ contact: { id, name, number }, onDelete }) => {
 
-    const handleClick = () => onDelete(id);
-
     return (
       <li className={css.li}>
         <p>
           {name}: {number}
         </p>
-        <button className={css.button} type="button" onClick={handleClick}>
+        <button className={css.button} type="button" onClick={() => onDelete(id)}>
           Delete
         </button>
       </li>
